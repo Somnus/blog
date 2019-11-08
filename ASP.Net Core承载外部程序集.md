@@ -47,6 +47,9 @@
     - 环境变量配置
         - 打开`launchSettings.json`文件;
         - 找到所有的`environmentVariables`节点，在该节点下面添加`ASPNETCORE_HOSTINGSTARTUPASSEMBLIES`,值为`HostingStartupLibrary`,即外部程序集名称。
+- 配置获取测试。
+    - 通过构造函数注入，将`IConfiguration`注入到控制器中。
+    - 通过`config["DevAccount_FromLibrary"]`形式获取配置数据，判断是否正确。
 
 
 ### 详细解读
