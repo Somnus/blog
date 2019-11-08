@@ -1,4 +1,6 @@
 ### 故事背景
+一般情况下ASP.Net Core项目配置可以直接在appsetting.json中添加，也可以在项目中添加新的配置文件。但如果想和其他项目一起实现配置文件通用呢？我们可以用绝对定位去访问配置文件，但可能会遇到访问权限之类的问题；我们也可以通过开发配置文件访问接口来实现，但太麻烦了，而且不可能加了一个配置我就去改一次访问代码。那么，官方有木有提供什么方案呢？
+有的，微软官方提供了允许ASP.Net Core承载外部程序集功能，实现逻辑就是通过外部类实现 IHostingStartup接口，在启动时从外部程序集向应用添加增强功能。针对我们前面提到的外部项目向ASP.Net Core中添加配置文件需求是如何实现的呢？无非ASP.Net Core在启动时执行`启动依赖程序集`中指定特性的下类中的Configure方法，而在该方法下将需要共享的配置添加到ASP.Net Core运行时中。
 
 ### 基本流程
 ##### 外部类库程序集
@@ -36,7 +38,7 @@
 
 ##### ASP.Net Core主项目
 - 添加对类库项目`HostingStartupLibrary`的引用，也可以直接引用类库项目编译后的dll文件。
-- 配置`主机启动依赖程序集`,配置方法有两种：主机配置与环境变量配置。若同时设置了主机配置与环境变量配置，则实际采用主机配置控制
+- 配置`主机启动依赖程序集`,配置方法有两种：主机配置与环境变量配置。若同时设置了主机配置与环境变量配置，则实际采用主机配置控制。
     - 主机配置
         - 打开`Program.cs`，找到`CreateHostBuilder`方法。
         - 在`UseStartup<Startup>()`之前，`webBuilder`之后添加`UseSetting(WebHostDefaults.HostingStartupAssembliesKey, "HostingStartupLibrary")`,`HostingStartupLibrary`即为外部程序集的名称。
